@@ -1,13 +1,1 @@
-안녕하세요.
-
-{
-    "user_key":"Il6jrp",
-    "sender_key":"624f20dfc39",
-    "time":158769,
-    "serial_number":2237739480534,
-    "type":"text",
-    "content":"안녕하세요 사랑합시다",
-    "salt":"Il6jrpgMpI",
-    "key":"f6109b73a11f8aee9b4",
-    "message":"N62LXZ8QohsXO\/"
-}
+Love all together ~^_^~
