@@ -4,24 +4,31 @@
     <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
     <meta charset="UTF-8">
     <script>
-        function showRemoteObject(obj) {
-            console.log(obj)
-            switch (obj.type) {
-                case "image/jpeg":
-                    console.log("jpg")
-                    msg.innerHTML = "<img src='data/" + obj.name + "' width='480' />"
-                    break
-                case "image/png":
-                    console.log("png")
-                    msg.innerHTML = "<img src='data/" + obj.name + "' width='480' />"
-                    break
-                case "text/plain":
-                    console.log("txt")
-                    msg.innerHTML = "<embed src='data/" + obj.name + "' width='480' />"
-                    break
-                default:
-                    msg.innerHTML = "Not an image or a plain text file"
-                    return
+        const imgObjs = {}
+
+        // function showRemoteObject(obj) {
+        function showRemoteObject() {
+            msg.innerHTML = ""
+            for (const [iname, value] of Object.entries(imgObjs)) {
+                const obj = JSON.parse(value)
+                console.log("WTF: ", iname, obj.name)
+                switch (obj.type) {
+                    case "image/jpeg":
+                        console.log("jpg")
+                        msg.innerHTML += "<img src='data/" + obj.name + "' width='480' />"
+                        break
+                    case "image/png":
+                        console.log("png")
+                        msg.innerHTML += "<img src='data/" + obj.name + "' width='480' />"
+                        break
+                    case "text/plain":
+                        console.log("txt")
+                        msg.innerHTML += "<embed src='data/" + obj.name + "' width='480' />"
+                        break
+                    default:
+                        msg.innerHTML = "Not an image or a plain text file"
+                        return
+                }
             }
         }
 
@@ -41,10 +48,10 @@
             let fname = input.files[0].name
             let ftype = input.files[0].type
 
-            sendFile(fname, ftype, fcontent)
+            sendFile(fname, ftype, fcontent, input.name)
         }
 
-        function sendFile(name, type, content) {
+        function sendFile(name, type, content, inputName) {
             let uri = "upload.php"
             // let uri = "http://localhost:10081/upload-stream/upload.php"
             let data = {
@@ -53,27 +60,30 @@
                 content: content,
             }
 
-            let xhr = new XMLHttpRequest();
+            let xhr = new XMLHttpRequest()
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === xhr.DONE) {
                     if (xhr.status === 200 || xhr.status === 201) {
-                        console.log(xhr.responseText);
-                        showRemoteObject(JSON.parse(xhr.responseText))
+                        imgObjs[inputName] = xhr.responseText
+                        console.log(xhr.responseText, inputName)
+                        // showRemoteObject(JSON.parse(xhr.responseText), inputName)
+                        showRemoteObject()
                     } else {
                         // 에러
-                        console.error(xhr.responseText);
+                        console.error(xhr.responseText)
                     }
                 }
             };
-            xhr.open("POST", uri, true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.send(JSON.stringify(data));
+            xhr.open("POST", uri, true)
+            xhr.setRequestHeader('Content-Type', 'application/json')
+            xhr.send(JSON.stringify(data))
         }
     </script>
 </head>
 
 <body>
-    <input type="file" onchange="read(this)" />
+    <input type="file" name="file1" onchange="read(this)" />
+    <input type="file" name="file2" onchange="read(this)" />
     <h3>Content:</h3>
     <pre id="msg"></pre>
 </body>
